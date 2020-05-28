@@ -11,7 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -35,10 +38,10 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 	private static final int EXPANSION_HEIGHT = 380;
 	private static final int DETAILS_ROWS = 8;
 	private static final int DETAILS_COLS = 20;
+	private static final int MAX_EMPTY_LBLS = 4;
 	
 	private static final Font EVENT_FONT = new Font("Sans Serif", Font.PLAIN, 18);
 	private static final Font BTN_FONT = new Font("Calibri", Font.BOLD, 16);
-	private static final Font EVENT_TITLE = new Font("", Font.PLAIN, 32);
 	private static final Font TIME_FONT = new Font("Sans Serif", Font.BOLD, 16);
 	private static final Dimension EDIT_FIELD_SIZE = new Dimension(270, 28);
 	private static final Color RED = new Color(153, 0, 0);
@@ -56,10 +59,11 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 	private JPanel btnsPanel; 		// sub-panel holds the buttons
 	private JPanel detailsPanel;	// holds the details text area
 	private JTextField eventField;
-	private JLabel eventTitleLbl;
+	private JLabel calendarIconLbl;
 	private JLabel eventTimeFromLbl;
 	private JLabel eventTimeToLbl;
 	private JLabel clockIconLbl;
+	private JLabel emptyLbl[];
 	private JComboBox<String> timeFrom;
 	private JComboBox<String> timeTo;
 	private JTextArea detailsArea;
@@ -67,6 +71,8 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 	private JButton detailsBtn;
 	private CalendarDay caller; 	// the day panel in the calendar which called this editor
 	private MyCalendar calendar;
+	private ImageIcon clockIcon;
+	private ImageIcon calendarIcon;
 	private String date;
 	private int eventIndex;
 	private boolean newEvent;
@@ -81,23 +87,34 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		super("Event Editor");
 		this.calendar = calendar;
 		mainEditPanel = new JPanel(new BorderLayout());
-		iconsPanel = new JPanel(new GridLayout(2, 1));
+		iconsPanel = new JPanel(new GridLayout(2, 3));
 		eventPanel = new JPanel(new GridLayout(2, 1));
 		eventEditPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		eventTimePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		detailsPanel = new JPanel();
 		btnsPanel = new JPanel();
 		eventField = new JTextField("Add an event");
-		eventTitleLbl = new JLabel("   \u270D");
+		calendarIconLbl = new JLabel();
 		eventTimeFromLbl = new JLabel("From");
 		eventTimeToLbl = new JLabel("to");
-		clockIconLbl = new JLabel("   \u23F1  ");
+		clockIconLbl = new JLabel();		
+		emptyLbl = new JLabel[MAX_EMPTY_LBLS];	
 		timeFrom = new JComboBox<String>(TIME);
 		timeTo = new JComboBox<String>(TIME);
 		detailsArea = new JTextArea("Add more details", DETAILS_ROWS, DETAILS_COLS);
 		scroll = new JScrollPane(detailsArea);
 		saveBtn = new JButton("Save");
 		detailsBtn = new JButton("Add details");
+		
+		for(int i = 0; i < MAX_EMPTY_LBLS; i++)
+			emptyLbl[i] = new JLabel();
+		
+		try {
+			clockIcon = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/clock.png")));
+			calendarIcon = new ImageIcon(ImageIO.read(getClass().getResourceAsStream("/calendar.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		setSize(WIDTH, HEIGHT);
 		getContentPane().setBackground(MyCalendar.LIGHT_BLACK);
@@ -164,7 +181,7 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		eventField.setText("Add an event");
 		timeFrom.setSelectedItem("06:00");
 		timeTo.setSelectedItem("06:00");
-		detailsArea.setText("Add more datails");
+		detailsArea.setText("Add more details");
 		
 		setVisible(true);
 	}
@@ -197,15 +214,22 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		eventTimePanel.add(timeFrom);
 		eventTimePanel.add(eventTimeToLbl);
 		eventTimePanel.add(timeTo);
+		
+		iconsPanel.add(emptyLbl[0]);
+		iconsPanel.add(calendarIconLbl);
+		iconsPanel.add(emptyLbl[1]);
+		iconsPanel.add(emptyLbl[2]);
+		iconsPanel.add(clockIconLbl);	
+		iconsPanel.add(emptyLbl[3]);
+		
 		detailsPanel.add(scroll);
 		btnsPanel.add(detailsBtn);
 		btnsPanel.add(saveBtn);
 
 		// add sub-panels to main panels
 		eventPanel.add(eventEditPanel);
-		eventPanel.add(eventTimePanel);		
-		iconsPanel.add(eventTitleLbl);
-		iconsPanel.add(clockIconLbl);		
+		eventPanel.add(eventTimePanel);	
+
 		mainEditPanel.add(eventPanel, BorderLayout.CENTER);
 		mainEditPanel.add(iconsPanel, BorderLayout.WEST);
 
@@ -233,16 +257,12 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		saveBtn.setBackground(RED);
 
 		// text color
-		eventTitleLbl.setForeground(Color.WHITE);
-		clockIconLbl.setForeground(Color.WHITE);
 		eventTimeToLbl.setForeground(Color.WHITE);
 		eventTimeFromLbl.setForeground(Color.WHITE);
 		detailsBtn.setForeground(Color.WHITE);
 		saveBtn.setForeground(Color.WHITE);
 
 		// fonts
-		eventTitleLbl.setFont(EVENT_TITLE);
-		clockIconLbl.setFont(EVENT_TITLE);
 		eventField.setFont(EVENT_FONT);
 		eventTimeFromLbl.setFont(TIME_FONT);
 		eventTimeToLbl.setFont(TIME_FONT);
@@ -254,6 +274,9 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 
 		eventField.setPreferredSize(EDIT_FIELD_SIZE);
 		detailsArea.setMargin(new Insets(0, 10, 0, 10));
+		
+		clockIconLbl.setIcon(clockIcon);
+		calendarIconLbl.setIcon(calendarIcon);		
 	}
 
 	/*
