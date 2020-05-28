@@ -9,4 +9,4 @@ it currently implements in-memory database (hash map), which will be switched wi
 - To show more details, click the "Add Details" button
 
 #### Demo
-![Demo](app_demo/calendar.gif)
+<img src="app_demo/calendar.gif" width="700"/>
