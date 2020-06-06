@@ -9,11 +9,14 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,9 +35,9 @@ import javax.swing.JTextField;
  */
 
 @SuppressWarnings("serial")
-public class EventEditor extends JFrame implements ActionListener, WindowListener {
-	private static final int WIDTH = 400;
-	private static final int HEIGHT = 200;
+public class EventEditor extends JFrame implements ActionListener {
+	private static final int WIDTH = 390;
+	private static final int HEIGHT = 180;
 	private static final int EXPANSION_HEIGHT = 380;
 	private static final int DETAILS_ROWS = 8;
 	private static final int DETAILS_COLS = 20;
@@ -43,8 +46,11 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 	private static final Font EVENT_FONT = new Font("Sans Serif", Font.PLAIN, 18);
 	private static final Font BTN_FONT = new Font("Calibri", Font.BOLD, 16);
 	private static final Font TIME_FONT = new Font("Sans Serif", Font.BOLD, 16);
-	private static final Dimension EDIT_FIELD_SIZE = new Dimension(270, 28);
+	private static final Dimension EDIT_FIELD_SIZE = new Dimension(230, 28);
+	private static final Dimension SAVE_BTN_SIZE = new Dimension(70, 30);
+	private static final Dimension DET_BTN_SIZE = new Dimension(110, 30);
 	private static final Color RED = new Color(153, 0, 0);
+	private static final Insets MARGIN = new Insets(0, 10, 0, 10);
 	private static final String[] TIME = { "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30",
 			"10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
 			"16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30",
@@ -95,8 +101,8 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		btnsPanel = new JPanel();
 		eventField = new JTextField("Add an event");
 		calendarIconLbl = new JLabel();
-		eventTimeFromLbl = new JLabel("From");
-		eventTimeToLbl = new JLabel("to");
+		eventTimeFromLbl = new JLabel("From ");
+		eventTimeToLbl = new JLabel(" to ");
 		clockIconLbl = new JLabel();		
 		emptyLbl = new JLabel[MAX_EMPTY_LBLS];	
 		timeFrom = new JComboBox<String>(TIME);
@@ -105,6 +111,7 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		scroll = new JScrollPane(detailsArea);
 		saveBtn = new JButton("Save");
 		detailsBtn = new JButton("Add details");
+		MouseHandler mouseHandler = new MouseHandler();
 		
 		for(int i = 0; i < MAX_EMPTY_LBLS; i++)
 			emptyLbl[i] = new JLabel();
@@ -120,9 +127,12 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		getContentPane().setBackground(MyCalendar.LIGHT_BLACK);
 		setResizable(false);
 
-		addWindowListener(this);
+		addWindowListener(new WindowHandler());
 		detailsBtn.addActionListener(this);
+		detailsBtn.addMouseListener(mouseHandler);
 		saveBtn.addActionListener(this);
+		saveBtn.addMouseListener(mouseHandler);
+		eventField.addMouseListener(mouseHandler);
 
 		buildComponentsHierarchy();
 		customizeComponents();
@@ -242,7 +252,12 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 	 * Sets the properties for this window's components.
 	 */
 	private void customizeComponents() {
-		// background color
+		// buttons sizes
+		saveBtn.setPreferredSize(SAVE_BTN_SIZE);
+		detailsBtn.setPreferredSize(DET_BTN_SIZE);
+		eventField.setPreferredSize(EDIT_FIELD_SIZE);
+		
+		// background colors
 		mainEditPanel.setBackground(MyCalendar.LIGHT_BLACK);
 		iconsPanel.setBackground(MyCalendar.LIGHT_BLACK);
 		eventPanel.setBackground(MyCalendar.LIGHT_BLACK);
@@ -250,17 +265,20 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		eventTimePanel.setBackground(MyCalendar.LIGHT_BLACK);
 		btnsPanel.setBackground(MyCalendar.LIGHT_BLACK);
 		detailsPanel.setBackground(MyCalendar.LIGHT_BLACK);
-		scroll.setForeground(Color.WHITE);
-		timeFrom.setBackground(Color.WHITE);
-		timeTo.setBackground(Color.WHITE);
 		detailsBtn.setBackground(Color.GRAY);
 		saveBtn.setBackground(RED);
+		eventField.setBackground(Color.DARK_GRAY);
+		detailsArea.setBackground(Color.DARK_GRAY);
 
-		// text color
-		eventTimeToLbl.setForeground(Color.WHITE);
-		eventTimeFromLbl.setForeground(Color.WHITE);
+		// text colors
+		eventTimeToLbl.setForeground(Color.LIGHT_GRAY);
+		eventTimeFromLbl.setForeground(Color.LIGHT_GRAY);
 		detailsBtn.setForeground(Color.WHITE);
 		saveBtn.setForeground(Color.WHITE);
+		eventField.setForeground(Color.GRAY);
+		detailsArea.setForeground(Color.WHITE);
+		timeFrom.setForeground(Color.DARK_GRAY);
+		timeTo.setForeground(Color.DARK_GRAY);
 
 		// fonts
 		eventField.setFont(EVENT_FONT);
@@ -271,12 +289,23 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 		detailsArea.setFont(EVENT_FONT);
 		detailsBtn.setFont(BTN_FONT);
 		saveBtn.setFont(BTN_FONT);
-
-		eventField.setPreferredSize(EDIT_FIELD_SIZE);
-		detailsArea.setMargin(new Insets(0, 10, 0, 10));
 		
+		// transparency
+		saveBtn.setContentAreaFilled(false);
+		saveBtn.setOpaque(true);
+		detailsBtn.setContentAreaFilled(false);
+		detailsBtn.setOpaque(true);
+		
+		// other properties
+		scroll.setForeground(Color.WHITE);
+		eventField.setCaretColor(Color.WHITE);
+		detailsArea.setCaretColor(Color.WHITE);
+		eventField.setMargin(MARGIN);
+		detailsArea.setMargin(MARGIN);		
 		clockIconLbl.setIcon(clockIcon);
 		calendarIconLbl.setIcon(calendarIcon);		
+		
+		eventField.setEditable(false);
 	}
 
 	/*
@@ -312,44 +341,57 @@ public class EventEditor extends JFrame implements ActionListener, WindowListene
 			saveEvent();
 			shrink();
 			setVisible(false);
-			validate();
-		}
-
-		if (e.getSource() == detailsBtn) {
+			
+		} else if (e.getSource() == detailsBtn) {
 			add(detailsPanel, BorderLayout.CENTER);
 			setSize(WIDTH, EXPANSION_HEIGHT);
+			
+		}
+		
+		validate();
+	}
+	
+	/*
+	 * This class handles the EventEditor window visibility and size.
+	 */
+	private class WindowHandler extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			shrink();
+			setVisible(false);
 			validate();
 		}
 	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
-		shrink();
-		setVisible(false);
-		validate();
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
+	
+	/*
+	 * This class only extends the MouseAdapter to handle mouse events.
+	 */
+	private class MouseHandler extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			 if (e.getSource() == eventField) {
+				eventField.setEditable(true);
+				eventField.setForeground(Color.WHITE);
+				validate();
+			}
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			if(e.getSource() == saveBtn)
+				saveBtn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+			
+			else if(e.getSource() == detailsBtn)
+				detailsBtn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		}
+		
+		@Override
+		public void mouseExited(MouseEvent e) {
+			if(e.getSource() == saveBtn)
+				saveBtn.setBorder(null);
+			
+			else if(e.getSource() == detailsBtn)
+				detailsBtn.setBorder(null);
+		}
 	}
 }

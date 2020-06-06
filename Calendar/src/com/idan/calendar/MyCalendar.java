@@ -96,7 +96,6 @@ public class MyCalendar extends JFrame implements MouseListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(WIDTH, HEIGHT);
 		setMinimumSize(MIN_SIZE);
-		setVisible(true);
 
 		initHeader();
 		initCalendarWeek();
@@ -107,6 +106,7 @@ public class MyCalendar extends JFrame implements MouseListener {
 		add(tablePanel, BorderLayout.CENTER);
 
 		validate();
+		setVisible(true);
 	}
 
 	/**
