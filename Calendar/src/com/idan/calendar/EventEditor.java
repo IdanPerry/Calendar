@@ -348,7 +348,8 @@ public class EventEditor extends JFrame implements ActionListener {
 			
 		}
 		
-		validate();
+		calendar.validate();
+		calendar.repaint();
 	}
 	
 	/*

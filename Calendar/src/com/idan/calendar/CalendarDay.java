@@ -35,7 +35,7 @@ public class CalendarDay extends JPanel implements MouseListener {
 	private static final int MAX_STR_SIZE = 10;
 	private static final int EDIT_WINDOW_X_FIX = 150;
 	private static final Font DAY_PANEL = new Font("Tahoma", Font.BOLD, 11);
-	private static final Font EVENT_FONT = new Font("Sans Serif", Font.PLAIN, 13);
+	private static final Font EVENT_FONT = new Font("Calibri", Font.PLAIN, 14);
 	private static final Border PANEL_BORDER = BorderFactory.createEmptyBorder(7, 7, 7, 7);
 	public static final Color ORANGE = new Color(255, 178, 102);
 	public static final Color LIGHT_ORANGE = new Color(255, 204, 153);
@@ -132,6 +132,7 @@ public class CalendarDay extends JPanel implements MouseListener {
 		StringBuilder header = cutEventHeader(event);
 		
 		JLabel eventLbl = new JLabel(event.getStartTime() + " " + header);
+		eventLbl.setFont(EVENT_FONT);
 		eventLbl.setForeground(Color.WHITE);
 		events[i].remove(1);
 		events[i].add(eventLbl);
