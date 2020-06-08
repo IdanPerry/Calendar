@@ -3,6 +3,7 @@ package com.idan.calendar;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -49,6 +50,7 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(WIDTH, HEIGHT);
 		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/calendar.png")));
 		
 		initTable();
 		add(monthPanel);

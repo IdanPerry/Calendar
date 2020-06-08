@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -126,6 +127,7 @@ public class EventEditor extends JFrame implements ActionListener {
 		setSize(WIDTH, HEIGHT);
 		getContentPane().setBackground(MyCalendar.LIGHT_BLACK);
 		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/calendar.png")));
 
 		addWindowListener(new WindowHandler());
 		detailsBtn.addActionListener(this);
