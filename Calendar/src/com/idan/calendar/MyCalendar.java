@@ -8,6 +8,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -96,7 +97,7 @@ public class MyCalendar extends JFrame implements MouseListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(WIDTH, HEIGHT);
 		setMinimumSize(MIN_SIZE);
-		setVisible(true);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/calendar.png")));
 
 		initHeader();
 		initCalendarWeek();
@@ -107,6 +108,7 @@ public class MyCalendar extends JFrame implements MouseListener {
 		add(tablePanel, BorderLayout.CENTER);
 
 		validate();
+		setVisible(true);
 	}
 
 	/**

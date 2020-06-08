@@ -3,11 +3,13 @@ package com.idan.calendar;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,7 +28,8 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 	private static final int MONTHS = 12;
 	private static final int ROWS = 3;
 	private static final int COLUMNS = 4;
-	private static final Font MONTH_FONT = new Font("Calibri", Font.BOLD, 18);
+	private static final Font MONTH_FONT = new Font("Sans Serif", Font.BOLD, 16);
+	private static final Font HOVER_FONT = new Font("Sans Serif", Font.BOLD, 20);
 
 	private JPanel monthPanel;
 	private JPanel tablePanel;
@@ -47,6 +50,7 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(WIDTH, HEIGHT);
 		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/calendar.png")));
 		
 		initTable();
 		add(monthPanel);
@@ -63,6 +67,8 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 			monthBtn[i].setBackground(MyCalendar.LIGHT_BLACK);
 			monthBtn[i].setForeground(Color.WHITE);
 			monthBtn[i].setFont(MONTH_FONT);
+			monthBtn[i].setContentAreaFilled(false);
+			monthBtn[i].setOpaque(true);
 			monthBtn[i].addActionListener(this);
 			monthBtn[i].addMouseListener(this);
 			monthPanel.add(monthBtn[i]);
@@ -89,6 +95,8 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < MONTHS; i++) {
 			if (e.getSource() == monthBtn[i]) {
 				monthBtn[i].setBackground(Color.DARK_GRAY);
+				monthBtn[i].setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+				monthBtn[i].setFont(HOVER_FONT);
 				break;
 			}
 		}
@@ -99,6 +107,8 @@ public class MonthSelect extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < MONTHS; i++) {
 			if (e.getSource() == monthBtn[i]) {
 				monthBtn[i].setBackground(MyCalendar.LIGHT_BLACK);
+				monthBtn[i].setBorder(null);
+				monthBtn[i].setFont(MONTH_FONT);
 				break;
 			}
 		}
